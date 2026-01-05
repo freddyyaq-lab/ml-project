@@ -3,14 +3,21 @@ import pandas as pd
 import joblib
 import os
 
+# ==========================================
+# 1. Configuración de la Página
+# ==========================================
 st.set_page_config(
     page_title="Evaluador de Riesgo de Crédito",
     page_icon="💰",
     layout="centered"
 )
 
+# ==========================================
+# 2. Función para cargar el modelo
+# ==========================================
 @st.cache_resource
 def load_model():
+    # Intentamos buscar el modelo en diferentes rutas comunes
     paths = ["src/best_model.pkl", "best_model.pkl", "../src/best_model.pkl"]
     for path in paths:
         if os.path.exists(path):
@@ -19,7 +26,9 @@ def load_model():
 
 model = load_model()
 
-
+# ==========================================
+# 3. Interfaz de Usuario
+# ==========================================
 st.title("💰 Sistema de Evaluación de Crédito")
 st.markdown("""
 Esta herramienta utiliza Inteligencia Artificial para predecir la probabilidad de que un cliente pague su crédito a tiempo.
@@ -55,8 +64,11 @@ else:
 
         submit = st.form_submit_button("🚀 Evaluar Riesgo")
 
-
+    # ==========================================
+    # 4. Lógica de Predicción
+    # ==========================================
     if submit:
+        # Crear un DataFrame con los nombres exactos de las columnas usadas en el entrenamiento
         input_df = pd.DataFrame([{
             'tipo_credito': str(tipo_credito),
             'capital_prestado': capital_prestado,
@@ -77,11 +89,12 @@ else:
         }])
 
         try:
+            # Obtener predicción y probabilidad
             probabilidad = model.predict_proba(input_df)[0][1]
             resultado = model.predict(input_df)[0]
 
             st.markdown("---")
-            st.subheader("Resultado del Analisis")
+            st.subheader("📊 Resultado del Análisis")
 
             col_res1, col_res2 = st.columns(2)
             
